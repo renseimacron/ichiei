@@ -1,4 +1,4 @@
-const CACHE_NAME = 'eisei-manager-v1';
+const CACHE_NAME = 'health-supervisor-v1';
 const ASSETS = [
   './',
   './index.html',
