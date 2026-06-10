@@ -331,7 +331,7 @@ let state = {
   quizStartedAt: 0, lastElapsed: 0,
   returnTo: 'home',
   selectedChapters: [], selectedMids: [], selectedSubs: [], selectedImportance: [], selectedYears: [],
-  globalFilter: { chapters: [], mids: [], subs: [], importance: [], years: [] },
+  globalFilter: { chapters: [], mids: [], subs: [], importance: ['3', '2', '1', '0', 'new', 'amendment'], years: [] },
   shuffle: true,
   subDetailFilter: 'all',
   sessionLimit: DEFAULT_SESSION_LIMIT,
@@ -414,11 +414,12 @@ function load() {
       if (Array.isArray(data.studyLog)) state.studyLog = data.studyLog;
       if (data.globalFilter && typeof data.globalFilter === 'object') {
         const g = data.globalFilter;
+        const imp = (Array.isArray(g.importance) && g.importance.length) ? g.importance : ['3', '2', '1', '0', 'new', 'amendment'];
         state.globalFilter = {
           chapters: Array.isArray(g.chapters) ? g.chapters : [],
           mids: Array.isArray(g.mids) ? g.mids : [],
           subs: Array.isArray(g.subs) ? g.subs : [],
-          importance: Array.isArray(g.importance) ? g.importance : [],
+          importance: imp,
           years: Array.isArray(g.years) ? g.years : [],
         };
       }
@@ -520,6 +521,15 @@ function formatElapsed(ms) {
   return `${m}分${s}秒`;
 }
 
+// idの末尾（枝番）から問番号を取り出す。例 '5-1-01-03' -> 3
+function qNumFromId(id) {
+  if (!id) return null;
+  const parts = String(id).split('-');
+  const last = parts[parts.length - 1];
+  const n = parseInt(last, 10);
+  return isNaN(n) ? null : n;
+}
+
 function importanceDisplay(imp) {
   if (imp === 'new') return '<span class="importance-new">新傾向</span>';
   if (imp === 'amendment') return '<span class="importance-amendment">法改正</span>';
@@ -575,27 +585,32 @@ function isVisible(q) {
   return !state.stats[q.id]?.hidden;
 }
 
-// 常時適用フィルタ：選択がある項目だけ絞り込む
+// 常時適用フィルタ
+// 重要度: 「選択したものだけ表示」。未選択(空)はどの問題も表示しない。全選択ですべて。
+// その他(章/中/小/年度): 未選択ならすべて対象。
 function matchesGlobalFilter(q) {
   const g = state.globalFilter || {};
   if (g.chapters && g.chapters.length && !g.chapters.includes(q.chapter)) return false;
   if (g.mids && g.mids.length && !g.mids.includes(q.mid)) return false;
   if (g.subs && g.subs.length && !g.subs.includes(q.sub)) return false;
-  if (g.importance && g.importance.length && !g.importance.includes(q.importance)) return false;
+  // 重要度は選択方式：空なら全て不一致（何も出さない）
+  if (!g.importance || g.importance.length === 0) return false;
+  if (!g.importance.includes(q.importance)) return false;
   if (g.years && g.years.length && !(q.year && g.years.includes(String(q.year)))) return false;
   return true;
 }
 
 function globalFilterActive() {
   const g = state.globalFilter || {};
-  return !!((g.chapters && g.chapters.length) || (g.mids && g.mids.length) || (g.subs && g.subs.length) || (g.importance && g.importance.length) || (g.years && g.years.length));
+  const impFiltered = !g.importance || g.importance.length < 6; // 全6種未満なら絞り込みあり
+  return !!((g.chapters && g.chapters.length) || (g.mids && g.mids.length) || (g.subs && g.subs.length) || impFiltered || (g.years && g.years.length));
 }
 
 // 現在のフィルタ内容を短い文章にまとめる
 function globalFilterSummary() {
   const g = state.globalFilter || {};
   const parts = [];
-  if (g.importance && g.importance.length) parts.push('重要度' + g.importance.map(i => (IMPORTANCE_LABELS[i] || i)).join('・'));
+  if (g.importance && g.importance.length && g.importance.length < 6) parts.push('重要度' + g.importance.map(i => (IMPORTANCE_LABELS[i] || i)).join('・'));
   if (g.years && g.years.length) parts.push('年度' + g.years.join('・'));
   const chMap = {}; STRUCTURE.forEach(c => { chMap[c.id] = c.name.split(' ')[0]; });
   if (g.chapters && g.chapters.length) parts.push('章:' + g.chapters.map(c => chMap[c] || c).join('・'));
@@ -1198,11 +1213,12 @@ function applyBackupData(data) {
   state.studyLog = data.studyLog || [];
   if (data.globalFilter && typeof data.globalFilter === 'object') {
     const g = data.globalFilter;
+    const imp = (Array.isArray(g.importance) && g.importance.length) ? g.importance : ['3', '2', '1', '0', 'new', 'amendment'];
     state.globalFilter = {
       chapters: Array.isArray(g.chapters) ? g.chapters : [],
       mids: Array.isArray(g.mids) ? g.mids : [],
       subs: Array.isArray(g.subs) ? g.subs : [],
-      importance: Array.isArray(g.importance) ? g.importance : [],
+      importance: imp,
       years: Array.isArray(g.years) ? g.years : [],
     };
   }
@@ -1653,13 +1669,13 @@ function renderSubDetail() {
           ${filtered.map((q) => {
             const a = getQuestionAccuracy(q.id);
             const status = getStatus(q.id);
-            const allIdx = baseQs.findIndex(qq => qq.id === q.id);
+            const qNum = qNumFromId(q.id);
             const rateCls = !a.answered ? 'mid' : a.rate >= 70 ? 'good' : a.rate >= 40 ? 'mid' : 'low';
             return `
               <button class="chapter-row ${a.hidden ? 'hidden-row' : ''}" data-act="open-q" data-qid="${esc(q.id)}" style="padding:12px 14px">
                 <div class="chapter-row-header">
                   <div class="chapter-name" style="font-weight:400;font-size:13px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">
-                    <span style="color:#8b6f47;margin-right:6px;font-weight:700">問${allIdx + 1}</span>
+                    <span style="color:#8b6f47;margin-right:6px;font-weight:700">問${qNum != null ? qNum : '?'}</span>
                     ${a.bookmarked ? '<span class="mark-bookmarked" style="margin-right:4px">⭐</span>' : ''}
                     ${a.hidden ? '<span class="mark-hidden" style="margin-right:4px">🚫</span>' : ''}
                     ${(q.question_image || q.explanation_image) ? '<span style="color:#8b6f47;margin-right:4px" title="図表あり">🖼</span>' : ''}
@@ -1716,7 +1732,7 @@ function renderQuiz() {
       <div class="card" style="margin-top:14px">
         <div class="quiz-meta">
           ${esc(ch?.name.split(' ')[0] || '')} ・ ${esc(mid?.name || '')}<br>
-          ${sub ? `<span style="font-weight:700">${sub.num}</span> ` : ''}${esc(q.sub)} ${importanceDisplay(q.importance)} ${statusBadge(status)}
+          ${sub ? `<span style="font-weight:700">${sub.num}</span> ` : ''}${esc(q.sub)}${qNumFromId(q.id) != null ? ` <span style="font-weight:700">問${qNumFromId(q.id)}</span>` : ''} ${importanceDisplay(q.importance)} ${statusBadge(status)}
           ${stat.bookmarked ? ' <span class="mark-bookmarked">⭐</span>' : ''}
           ${q.year ? ` <span style="color:#8b6f47;font-size:12px;letter-spacing:0.05em">📅 ${esc(q.year)}</span>` : ''}
           ${Array.isArray(q.recent_exams) && q.recent_exams.length ? `<div style="margin-top:6px">${q.recent_exams.map(y => `<span class="recent-exam-badge">📅 ${esc(toWareki(y))}</span>`).join('')}</div>` : ''}
@@ -1861,7 +1877,7 @@ function renderFilter() {
       </div>
 
       <div style="font-size:12px;color:#8b6f47;margin-bottom:12px;line-height:1.6">
-        ここで選んだ範囲は<b>アプリ全体（出題・統計・一覧）に常に適用</b>されます。次回起動時も保持されます。未選択の項目はすべて対象です。
+        ここで選んだ範囲は<b>アプリ全体（出題・統計・一覧）に常に適用</b>されます。次回起動時も保持されます。重要度は<b>選択したものだけ</b>が対象です（全選択ですべて／何も選ばないと出題されません）。
       </div>
 
       <div class="card">
@@ -1873,7 +1889,7 @@ function renderFilter() {
             </span>
           `).join('')}
         </div>
-        <div style="font-size:11px;color:#8b6f47;margin-top:6px">未選択ですべて</div>
+        <div style="font-size:11px;color:#8b6f47;margin-top:6px">全選択ですべて（外した重要度は出題されません）</div>
       </div>
 
       ${hasYearData() ? `
@@ -1890,7 +1906,7 @@ function renderFilter() {
         </div>
       ` : ''}
 
-      <button class="btn-secondary" data-act="gf-clear" style="width:100%;margin-bottom:8px">フィルタを解除（全範囲に戻す）</button>
+      <button class="btn-secondary" data-act="gf-clear" style="width:100%;margin-bottom:8px">すべて選択（全範囲に戻す）</button>
       <button class="btn" data-act="back-home">保存して戻る</button>
     </div>
   `;
@@ -2449,7 +2465,7 @@ function handleAction(act, el, ev) {
   }
   else if (act === 'open-q') {
     const ch = state.browseChapter, mid = state.browseMid, sub = state.browseSub;
-    const baseQs = state.questions.filter(q => q.chapter === ch && q.mid === mid && q.sub === sub);
+    const baseQs = state.questions.filter(q => q.chapter === ch && q.mid === mid && q.sub === sub && matchesGlobalFilter(q));
     const visibleQs = state.showHidden ? baseQs : baseQs.filter(isVisible);
     let filtered = visibleQs;
     if (state.subDetailFilter === 'unanswered') filtered = visibleQs.filter(q => getStatus(q.id) === 'new');
@@ -2529,9 +2545,9 @@ function handleAction(act, el, ev) {
   else if (act === 'gf-imp') { state.globalFilter.importance = toggleArr(state.globalFilter.importance, el.dataset.imp); save(); render(); }
   else if (act === 'gf-year') { state.globalFilter.years = toggleArr(state.globalFilter.years, el.dataset.year); save(); render(); }
   else if (act === 'gf-clear') {
-    state.globalFilter = { chapters: [], mids: [], subs: [], importance: [], years: [] };
+    state.globalFilter = { chapters: [], mids: [], subs: [], importance: ['3', '2', '1', '0', 'new', 'amendment'], years: [] };
     save(); render();
-    showToast('フィルタを解除しました');
+    showToast('全選択に戻しました');
   }
   else if (act === 'clear-filter') {
     state.selectedChapters = []; state.selectedMids = []; state.selectedSubs = []; state.selectedImportance = []; state.selectedYears = [];
