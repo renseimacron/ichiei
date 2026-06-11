@@ -1,4 +1,4 @@
-const CACHE_NAME = 'health-supervisor-v2';
+const CACHE_NAME = 'health-supervisor-v3';
 const ASSETS = [
   './',
   './index.html',
