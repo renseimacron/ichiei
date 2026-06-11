@@ -36,6 +36,16 @@
   .streak-num { font-size: 24px; font-weight: 700; line-height: 1; }
   .streak-label { font-size: 10px; letter-spacing: 0.2em; color: #f0c4d4; text-transform: uppercase; margin-top: 4px; }
 
+  /* 学習分析カード(7日間+総合成績をまとめる枠) */
+  .analysis-card { background: #ffffff; border: 1px solid #ec9fb8; padding: 0; margin-bottom: 14px; overflow: hidden; }
+  .analysis-card-head { display: flex; align-items: center; justify-content: space-between; width: 100%; background: #e85d8a; color: #ffffff; border: none; cursor: pointer; padding: 14px 16px; text-align: left; }
+  .analysis-card-head:active { background: #d64d7c; }
+  .analysis-card-head .ach-title { font-size: 16px; font-weight: 700; letter-spacing: 0.04em; }
+  .analysis-card-head .ach-go { font-size: 13px; font-weight: 700; opacity: 0.95; }
+  .analysis-card-body { padding: 14px; }
+  .analysis-card-body .analysis-sub:first-child { margin-top: 0; }
+  .analysis-card-body .analysis-sub { margin-top: 16px; }
+
   /* 7日間グラフ */
   .activity-graph { background: #ffffff; border: 1px solid #ec9fb8; padding: 14px; margin-bottom: 14px; }
   .activity-bars { display: flex; gap: 4px; align-items: flex-end; height: 48px; margin: 10px 0 6px; }
@@ -63,9 +73,10 @@
   }
   .mode-list .mode-card .mc-main { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
   .mode-list .mode-card .mode-card-icon { font-size: 20px; margin: 0; flex-shrink: 0; }
-  .mode-list .mode-card .mc-text { min-width: 0; }
-  .mode-list .mode-card .mode-card-title { margin-top: 0; }
-  .mode-list .mode-card .mode-card-desc { margin-top: 2px; }
+  .mode-list .mode-card .mc-text { min-width: 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: nowrap; overflow: hidden; }
+  .mode-list .mode-card .mode-card-title { margin-top: 0; flex-shrink: 0; }
+  .mode-list .mode-card .mode-card-desc { margin-top: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mode-list .mode-card { padding: 10px 14px; }
   .mode-list .mode-card .mode-card-count { margin-top: 0; flex-shrink: 0; white-space: nowrap; }
   .mode-card {
     background: #ffffff; border: 1px solid #ec9fb8; padding: 16px 12px;
@@ -259,40 +270,40 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "ヒラギノ角ゴシック", "Yu Gothic", "Helvetica Neue", Arial, sans-serif !important;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-size: 17px;
-  line-height: 1.75;
+  font-size: 15px;
+  line-height: 1.7;
   padding-left: max(14px, env(safe-area-inset-left));
   padding-right: max(14px, env(safe-area-inset-right));
 }
 .container { max-width: 100% !important; }
 .card { border-radius: 12px; box-shadow: 0 1px 0 rgba(0,0,0,.03); }
-.title { font-size: 22px !important; line-height: 1.35; }
-.subtitle { font-size: 11px !important; letter-spacing: .18em !important; }
-.q-text { font-size: 18px !important; line-height: 1.85 !important; font-weight: 650 !important; }
-.explanation { font-size: 17px !important; line-height: 1.9 !important; padding: 16px 18px !important; }
-.explanation-label { font-size: 15px !important; }
-.quiz-meta, .breadcrumb { font-size: 14px !important; }
-.answer-btn { font-size: 32px !important; padding: 24px 0 !important; border-radius: 10px; }
-.btn { font-size: 16px !important; padding: 16px 18px !important; }
-.btn-secondary { font-size: 14px !important; padding: 13px 16px !important; }
+.title { font-size: 19px !important; line-height: 1.35; }
+.subtitle { font-size: 10px !important; letter-spacing: .18em !important; }
+.q-text { font-size: 16px !important; line-height: 1.8 !important; font-weight: 600 !important; }
+.explanation { font-size: 15px !important; line-height: 1.85 !important; padding: 14px 16px !important; }
+.explanation-label { font-size: 14px !important; }
+.quiz-meta, .breadcrumb { font-size: 13px !important; }
+.answer-btn { font-size: 24px !important; padding: 18px 0 !important; border-radius: 10px; }
+.btn { font-size: 15px !important; padding: 15px 18px !important; }
+.btn-secondary { font-size: 13px !important; padding: 12px 16px !important; }
 .btn, .btn-secondary, .mode-card, .chapter-row, .chip, .small-btn {
   border-radius: 10px;
 }
-.mode-card-title { font-size: 16px !important; }
-.mode-card-desc { font-size: 12px !important; }
+.mode-card-title { font-size: 15px !important; }
+.mode-card-desc { font-size: 11px !important; }
 .mode-card-count { font-size: 12px !important; }
-.chapter-name { font-size: 15px !important; }
+.chapter-name { font-size: 14px !important; }
 .quiz-footer { max-width: 100% !important; }
-.quiz-footer button { font-size: 13px !important; min-height: 62px; }
-.quiz-footer button.qf-nav { font-size: 16px !important; }
-.quiz-footer button .qf-ico { font-size: 19px !important; }
-.quiz-footer button.qf-nav .qf-ico { font-size: 28px !important; }
+.quiz-footer button { font-size: 12px !important; min-height: 58px; }
+.quiz-footer button.qf-nav { font-size: 15px !important; }
+.quiz-footer button .qf-ico { font-size: 18px !important; }
+.quiz-footer button.qf-nav .qf-ico { font-size: 26px !important; }
 input[type=text], textarea, select { font-size: 16px !important; border-radius: 10px; }
 @media (max-width: 380px) {
   body { padding-left: 10px; padding-right: 10px; }
   .card { padding: 14px; }
-  .title { font-size: 20px !important; }
-  .q-text { font-size: 17px !important; }
+  .title { font-size: 18px !important; }
+  .q-text { font-size: 15px !important; }
 }
 
 </style>
@@ -1365,52 +1376,58 @@ function renderHome() {
           <div class="streak-label">今日の解答</div>
         </div>
       </button>
-      <button class="btn-secondary" data-act="progress" style="width:100%;margin-bottom:14px">📊 学習分析を見る</button>
-
-      <div class="activity-graph">
-        <div class="section-label" style="margin-bottom:4px;font-size:14px;font-weight:700;letter-spacing:0.05em;text-transform:none">7日間の学習量</div>
-        <div class="activity-bars">
-          ${dailyCounts.map(d => {
-            const h = d.count === 0 ? 2 : Math.max(4, Math.round((d.count / maxDaily) * 44));
-            const isToday = d.date === todayStr();
-            const cls = (d.count > 0 ? 'has-data ' : '') + (isToday ? 'today' : '');
-            return `
-              <div class="activity-bar-wrap">
-                <div class="activity-bar-val">${d.count > 0 ? d.count : ''}</div>
-                <div class="activity-bar ${cls}" style="height:${h}px"></div>
-                <div class="activity-bar-label">${d.date.slice(5).replace('-', '/')}</div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
-
-      <div class="card card-tight">
-        <div class="section-label" style="font-size:14px;font-weight:700;letter-spacing:0.05em;text-transform:none">総合成績</div>
-        <div class="stat-row" style="margin-bottom:10px">
-          <div class="stat-box">
-            <div class="stat-num stat-num-large">${overall.rate}<span style="font-size:14px">%</span></div>
-            <div class="stat-label">正解率(全問中)</div>
-          </div>
-          <div class="divider"></div>
-          <div class="stat-box">
-            <div class="stat-num">${overall.mastered}<span style="font-size:12px;color:#8b6f47">/${overall.count}</span></div>
-            <div class="stat-label">習得/全問</div>
-          </div>
-          <div class="divider"></div>
-          <div class="stat-box">
-            <div class="stat-num">${overall.masteredRate}<span style="font-size:14px">%</span></div>
-            <div class="stat-label">習得率</div>
-          </div>
-          ${t.avgElapsed > 0 ? `
-            <div class="divider"></div>
-            <div class="stat-box">
-              <div class="stat-num">${(t.avgElapsed/1000).toFixed(1)}<span style="font-size:12px;color:#8b6f47">s</span></div>
-              <div class="stat-label">平均解答</div>
+      <div class="analysis-card">
+        <button class="analysis-card-head" data-act="progress">
+          <span class="ach-title">📊 学習分析</span>
+          <span class="ach-go">詳しく見る ›</span>
+        </button>
+        <div class="analysis-card-body">
+          <div class="analysis-sub">
+            <div class="section-label" style="margin-bottom:4px;font-size:14px;font-weight:700;letter-spacing:0.05em;text-transform:none">7日間の学習量</div>
+            <div class="activity-bars">
+              ${dailyCounts.map(d => {
+                const h = d.count === 0 ? 2 : Math.max(4, Math.round((d.count / maxDaily) * 44));
+                const isToday = d.date === todayStr();
+                const cls = (d.count > 0 ? 'has-data ' : '') + (isToday ? 'today' : '');
+                return `
+                  <div class="activity-bar-wrap">
+                    <div class="activity-bar-val">${d.count > 0 ? d.count : ''}</div>
+                    <div class="activity-bar ${cls}" style="height:${h}px"></div>
+                    <div class="activity-bar-label">${d.date.slice(5).replace('-', '/')}</div>
+                  </div>
+                `;
+              }).join('')}
             </div>
-          ` : ''}
+          </div>
+
+          <div class="analysis-sub">
+            <div class="section-label" style="font-size:14px;font-weight:700;letter-spacing:0.05em;text-transform:none">総合成績</div>
+            <div class="stat-row" style="margin-bottom:10px">
+              <div class="stat-box">
+                <div class="stat-num stat-num-large">${overall.rate}<span style="font-size:14px">%</span></div>
+                <div class="stat-label">正解率(全問中)</div>
+              </div>
+              <div class="divider"></div>
+              <div class="stat-box">
+                <div class="stat-num">${overall.mastered}<span style="font-size:12px;color:#8b6f47">/${overall.count}</span></div>
+                <div class="stat-label">習得/全問</div>
+              </div>
+              <div class="divider"></div>
+              <div class="stat-box">
+                <div class="stat-num">${overall.masteredRate}<span style="font-size:14px">%</span></div>
+                <div class="stat-label">習得率</div>
+              </div>
+              ${t.avgElapsed > 0 ? `
+                <div class="divider"></div>
+                <div class="stat-box">
+                  <div class="stat-num">${(t.avgElapsed/1000).toFixed(1)}<span style="font-size:12px;color:#8b6f47">s</span></div>
+                  <div class="stat-label">平均解答</div>
+                </div>
+              ` : ''}
+            </div>
+            <div class="bar"><div class="bar-fill ${overall.count ? (overall.rate >= 70 ? 'good' : overall.rate >= 40 ? 'mid' : 'low') : 'mid'}" style="width:${overall.count ? overall.rate : 0}%"></div></div>
+          </div>
         </div>
-        <div class="bar"><div class="bar-fill ${overall.count ? (overall.rate >= 70 ? 'good' : overall.rate >= 40 ? 'mid' : 'low') : 'mid'}" style="width:${overall.count ? overall.rate : 0}%"></div></div>
       </div>
 
       <div class="section-label" style="padding:0 4px">学習モード（${state.sessionLimit || '∞'}問ずつ）</div>
