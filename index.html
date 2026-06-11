@@ -1376,59 +1376,7 @@ function renderHome() {
           <div class="streak-label">今日の解答</div>
         </div>
       </button>
-      <div class="analysis-card">
-        <button class="analysis-card-head" data-act="progress">
-          <span class="ach-title">📊 学習分析</span>
-          <span class="ach-go">詳しく見る ›</span>
-        </button>
-        <div class="analysis-card-body">
-          <div class="analysis-sub">
-            <div class="section-label" style="margin-bottom:4px;font-size:14px;font-weight:700;letter-spacing:0.05em;text-transform:none">7日間の学習量</div>
-            <div class="activity-bars">
-              ${dailyCounts.map(d => {
-                const h = d.count === 0 ? 2 : Math.max(4, Math.round((d.count / maxDaily) * 44));
-                const isToday = d.date === todayStr();
-                const cls = (d.count > 0 ? 'has-data ' : '') + (isToday ? 'today' : '');
-                return `
-                  <div class="activity-bar-wrap">
-                    <div class="activity-bar-val">${d.count > 0 ? d.count : ''}</div>
-                    <div class="activity-bar ${cls}" style="height:${h}px"></div>
-                    <div class="activity-bar-label">${d.date.slice(5).replace('-', '/')}</div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          </div>
-
-          <div class="analysis-sub">
-            <div class="section-label" style="font-size:14px;font-weight:700;letter-spacing:0.05em;text-transform:none">総合成績</div>
-            <div class="stat-row" style="margin-bottom:10px">
-              <div class="stat-box">
-                <div class="stat-num stat-num-large">${overall.rate}<span style="font-size:14px">%</span></div>
-                <div class="stat-label">正解率(全問中)</div>
-              </div>
-              <div class="divider"></div>
-              <div class="stat-box">
-                <div class="stat-num">${overall.mastered}<span style="font-size:12px;color:#8b6f47">/${overall.count}</span></div>
-                <div class="stat-label">習得/全問</div>
-              </div>
-              <div class="divider"></div>
-              <div class="stat-box">
-                <div class="stat-num">${overall.masteredRate}<span style="font-size:14px">%</span></div>
-                <div class="stat-label">習得率</div>
-              </div>
-              ${t.avgElapsed > 0 ? `
-                <div class="divider"></div>
-                <div class="stat-box">
-                  <div class="stat-num">${(t.avgElapsed/1000).toFixed(1)}<span style="font-size:12px;color:#8b6f47">s</span></div>
-                  <div class="stat-label">平均解答</div>
-                </div>
-              ` : ''}
-            </div>
-            <div class="bar"><div class="bar-fill ${overall.count ? (overall.rate >= 70 ? 'good' : overall.rate >= 40 ? 'mid' : 'low') : 'mid'}" style="width:${overall.count ? overall.rate : 0}%"></div></div>
-          </div>
-        </div>
-      </div>
+      <button class="btn-secondary" data-act="progress" style="width:100%;margin-bottom:14px;font-weight:700">📊 学習分析を見る</button>
 
       <div class="section-label" style="padding:0 4px">学習モード（${state.sessionLimit || '∞'}問ずつ）</div>
       <div class="mode-list" style="margin-bottom:14px">
