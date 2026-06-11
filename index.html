@@ -36,8 +36,11 @@
   .streak-num { font-size: 24px; font-weight: 700; line-height: 1; }
   .streak-label { font-size: 10px; letter-spacing: 0.2em; color: #f0c4d4; text-transform: uppercase; margin-top: 4px; }
 
-  /* 学習分析カード(7日間+総合成績をまとめる枠) */
-  .analysis-card { background: #ffffff; border: 1px solid #ec9fb8; padding: 0; margin-bottom: 14px; overflow: hidden; }
+  /* 学習分析: 章の折りたたみ */
+  details.chapter-acc > summary { cursor: pointer; }
+  details.chapter-acc[open] > summary { margin-bottom: 2px; }
+
+  /* 学習分析カード(7日間+総合成績をまとめる枠) */  .analysis-card { background: #ffffff; border: 1px solid #ec9fb8; padding: 0; margin-bottom: 14px; overflow: hidden; }
   .analysis-card-head { display: flex; align-items: center; justify-content: space-between; width: 100%; background: #e85d8a; color: #ffffff; border: none; cursor: pointer; padding: 14px 16px; text-align: left; }
   .analysis-card-head:active { background: #d64d7c; }
   .analysis-card-head .ach-title { font-size: 16px; font-weight: 700; letter-spacing: 0.04em; }
@@ -2030,25 +2033,30 @@ function renderProgressPage() {
         ${STRUCTURE.map(ch => {
           const chProg = getProgress(q => q.chapter === ch.id);
           if (chProg.count === 0) return '';
+          const midRows = ch.mids.map(m => {
+            const mProg = getProgress(q => q.mid === m.id);
+            if (mProg.count === 0) return '';
+            const subRows = m.subs.map(s => {
+              const sProg = getProgress(q => q.mid === m.id && q.sub === s.name);
+              if (sProg.count === 0) return '';
+              return accuracyRow(s.num + ' ' + s.name, sProg, { indent: true });
+            }).join('');
+            return `
+              <details>
+                <summary style="list-style:none;cursor:pointer">
+                  ${accuracyRow(m.name + (subRows ? ' ▾' : ''), mProg, {})}
+                </summary>
+                <div>${subRows}</div>
+              </details>
+            `;
+          }).join('');
           return `
-            ${accuracyRow(ch.name, chProg, { isChapter: true })}
-            ${ch.mids.map(m => {
-              const mProg = getProgress(q => q.mid === m.id);
-              if (mProg.count === 0) return '';
-              const subRows = m.subs.map(s => {
-                const sProg = getProgress(q => q.mid === m.id && q.sub === s.name);
-                if (sProg.count === 0) return '';
-                return accuracyRow(s.num + ' ' + s.name, sProg, { indent: true });
-              }).join('');
-              return `
-                <details>
-                  <summary style="list-style:none;cursor:pointer">
-                    ${accuracyRow(m.name + (subRows ? ' ▾' : ''), mProg, {})}
-                  </summary>
-                  <div>${subRows}</div>
-                </details>
-              `;
-            }).join('')}
+            <details class="chapter-acc">
+              <summary style="list-style:none;cursor:pointer">
+                ${accuracyRow(ch.name + ' ▾', chProg, { isChapter: true })}
+              </summary>
+              <div>${midRows}</div>
+            </details>
           `;
         }).join('')}
       </div>
