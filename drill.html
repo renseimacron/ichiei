@@ -327,7 +327,7 @@ let state = {
   drumSel: [], lastDrumSel: [],
   quizStartedAt: 0, lastElapsed: 0,
   returnTo: 'home',
-  selectedChapters: [], selectedMids: [], selectedSubs: [], selectedImportance: [], selectedYears: [],
+  selectedChapters: [], selectedMids: [], selectedSubs: [], selectedImportance: ['3', '2', '1', '0', 'new'], selectedYears: [],
   shuffle: true,
   subDetailFilter: 'all',
   sessionLimit: DEFAULT_SESSION_LIMIT,
@@ -660,7 +660,7 @@ function weakScore(q) {
 }
 
 function startQuizMode(mode) {
-  state.selectedChapters = []; state.selectedMids = []; state.selectedSubs = []; state.selectedImportance = []; state.selectedYears = [];
+  state.selectedChapters = []; state.selectedMids = []; state.selectedSubs = []; state.selectedImportance = ['3', '2', '1', '0', 'new']; state.selectedYears = [];
   let pool = buildPoolByMode(mode);
   if (pool.length === 0) {
     const msg = {
@@ -1299,7 +1299,7 @@ function renderHome() {
         <div>
           <div class="mode-card-icon">🎯</div>
           <div class="mode-card-title">出題範囲フィルタ</div>
-          <div class="mode-card-desc">章・重要度で絞り込み（タップで設定）</div>
+          <div class="mode-card-desc">重要度で絞り込み（タップで設定）</div>
         </div>
         <div class="mode-card-count">設定</div>
       </button>
@@ -1761,8 +1761,12 @@ function renderFilter() {
   return `
     <div class="container">
       <div class="top-bar">
-        <span>範囲を指定して出題</span>
+        <span>出題範囲フィルタ</span>
         <span class="back" data-act="back-home">← 戻る</span>
+      </div>
+
+      <div style="font-size:12px;color:#27496d;margin-bottom:12px;line-height:1.6">
+        ここで選んだ範囲は<b>アプリ全体（出題・統計・一覧）に常に適用</b>されます。次回起動時も保持されます。重要度は<b>選択したものだけ</b>が対象です（全選択ですべて／何も選ばないと出題されません）。
       </div>
 
       <div class="card">
@@ -1774,7 +1778,7 @@ function renderFilter() {
             </span>
           `).join('')}
         </div>
-        <div style="font-size:11px;color:#27496d;margin-top:6px">未選択ですべて</div>
+        <div style="font-size:11px;color:#27496d;margin-top:6px">全選択ですべて（外した重要度は出題されません）</div>
       </div>
 
       ${hasYearData() ? `
@@ -1791,56 +1795,8 @@ function renderFilter() {
         </div>
       ` : ''}
 
-      <div class="card">
-        <div class="section-label">章・中項目・小項目</div>
-        ${STRUCTURE.map(ch => `
-          <details>
-            <summary>
-              <label style="display:flex;align-items:center;gap:8px;flex:1" onclick="event.stopPropagation()">
-                <input type="checkbox" ${state.selectedChapters.includes(ch.id)?'checked':''} data-act="toggle-ch" data-ch="${ch.id}">
-                <span>${esc(ch.name)}</span>
-              </label>
-            </summary>
-            <div style="padding-left:12px;padding-top:6px">
-              ${ch.mids.map(m => `
-                <details>
-                  <summary>
-                    <label style="display:flex;align-items:center;gap:8px;flex:1;font-size:13px" onclick="event.stopPropagation()">
-                      <input type="checkbox" ${state.selectedMids.includes(m.id)?'checked':''} data-act="toggle-mid" data-mid="${m.id}">
-                      <span>${esc(m.name)}</span>
-                    </label>
-                  </summary>
-                  <div style="padding-left:24px;padding-top:4px;padding-bottom:6px">
-                    ${m.subs.map(s => `
-                      <span class="chip small ${state.selectedSubs.includes(s.name)?'active':''}" data-act="toggle-sub" data-sub="${esc(s.name)}">
-                        <span style="font-weight:700;margin-right:2px">${s.num}</span> ${esc(s.name)}
-                      </span>
-                    `).join('')}
-                  </div>
-                </details>
-              `).join('')}
-            </div>
-          </details>
-        `).join('')}
-      </div>
-
-      <div class="card">
-        <div class="section-label">オプション</div>
-        <label class="check-row">
-          <input type="checkbox" ${state.shuffle?'checked':''} data-act="toggle-shuffle">
-          ランダム出題
-        </label>
-        <div class="field-label">1セッションあたりの問題数</div>
-        <div>
-          ${[10, 20, 30, 50, 100].map(n => `
-            <span class="chip small ${state.sessionLimit===n?'active':''}" data-act="set-limit" data-n="${n}">${n}問</span>
-          `).join('')}
-          <span class="chip small ${state.sessionLimit===0?'active':''}" data-act="set-limit" data-n="0">無制限</span>
-        </div>
-      </div>
-
-      <button class="btn-secondary" data-act="clear-filter" style="width:100%;margin-bottom:8px">フィルタをクリア</button>
-      <button class="btn" data-act="start-filter">この範囲で出題する</button>
+      <button class="btn-secondary" data-act="clear-filter" style="width:100%;margin-bottom:8px">すべて選択（全範囲に戻す）</button>
+      <button class="btn" data-act="back-home">保存して戻る</button>
     </div>
   `;
 }
@@ -2369,7 +2325,8 @@ function handleAction(act, el, ev) {
   else if (act === 'toggle-year') { state.selectedYears = toggleArr(state.selectedYears, el.dataset.year); render(); }
   else if (act === 'set-limit') { state.sessionLimit = parseInt(el.dataset.n) || 0; render(); }
   else if (act === 'clear-filter') {
-    state.selectedChapters = []; state.selectedMids = []; state.selectedSubs = []; state.selectedImportance = []; state.selectedYears = [];
+    state.selectedChapters = []; state.selectedMids = []; state.selectedSubs = [];
+    state.selectedImportance = ['3', '2', '1', '0', 'new']; state.selectedYears = [];
     render();
   }
   else if (act === 'start-filter') startQuizFromFilter();
