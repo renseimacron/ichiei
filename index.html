@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="一衛問題集">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2c2c2a">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>第一種衛生管理者試験 問題集</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; }
+  html { background: #f4f4f6; }
+  body {
+    margin: 0; min-height: 100vh; background: #f4f4f6;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "ヒラギノ角ゴシック", "Yu Gothic", "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+    color: #2c2c2a;
+    display: flex; flex-direction: column;
+    padding: 0 0 calc(28px + env(safe-area-inset-bottom, 0));
+  }
+  .container { width: 100%; max-width: 760px; margin: 0 auto; flex: 1; display: flex; flex-direction: column; }
+
+  /* ヒーロー（上部のタイトル帯） */
+  .hero {
+    background: #2c2c2a;
+    color: #ffffff;
+    padding: calc(34px + env(safe-area-inset-top, 0)) 24px 32px;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ""; position: absolute; top: -70px; left: -50px;
+    width: 230px; height: 230px; border-radius: 50%;
+    background: rgba(255,255,255,0.05); pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 12px; letter-spacing: 0.28em; font-weight: 700;
+    color: #a9a9a6; margin: 0 0 14px; text-transform: none;
+  }
+  .hero-title {
+    margin: 0; font-weight: 700; line-height: 1.3;
+    font-size: 30px; letter-spacing: 0.04em;
+  }
+  .hero-sub {
+    margin: 14px 0 0; font-size: 13px; letter-spacing: 0.14em;
+    color: #a9a9a6;
+  }
+
+  /* 入口 */
+  .entry-wrap {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+    gap: 16px; padding: 40px 22px;
+  }
+  .entry-lead {
+    text-align: center; font-size: 12px; letter-spacing: 0.22em;
+    color: #6b6b68; font-weight: 700; margin: 0 0 4px;
+  }
+  .entry {
+    display: flex; align-items: center; gap: 16px;
+    width: 100%; text-align: left; cursor: pointer;
+    border: 1px solid #d8d8db; border-radius: 16px;
+    background: #ffffff; color: #2c2c2a;
+    padding: 22px 22px; font-family: inherit;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.2s;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  }
+  .entry:active { transform: scale(0.985); opacity: 0.9; }
+  .entry .ico {
+    width: 52px; height: 52px; flex-shrink: 0; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; line-height: 1;
+  }
+  .entry .body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .entry .name { display: block; font-size: 19px; font-weight: 700; letter-spacing: 0.04em; }
+  .entry .desc { display: block; margin-top: 5px; font-size: 12px; letter-spacing: 0.06em; }
+  .entry .arrow { font-size: 22px; flex-shrink: 0; font-weight: 700; }
+
+  /* 暗記ドリル＝薄青 */
+  .entry.drill { background: #e8eef5; border-color: #c9d6e3; }
+  .entry.drill .ico { background: #ffffff; }
+  .entry.drill .name { color: #2c2c2a; }
+  .entry.drill .desc { color: #3a5a78; }
+  .entry.drill .arrow { color: #3a5a78; }
+
+  /* 一問一答＝ピンク（従来） */
+  .entry.quiz { background: #fce8ef; border-color: #ec9fb8; }
+  .entry.quiz .ico { background: #ffffff; }
+  .entry.quiz .name { color: #2c2c2a; }
+  .entry.quiz .desc { color: #c23368; }
+  .entry.quiz .arrow { color: #c23368; }
+
+  .foot {
+    text-align: center; font-size: 11px; letter-spacing: 0.08em;
+    color: #a0a09d; padding: 8px 22px 0;
+  }
+
+  @media (max-width: 380px) {
+    .hero { padding-left: 16px; padding-right: 16px; }
+    .hero-title { font-size: 25px; }
+    .entry-wrap { padding-left: 14px; padding-right: 14px; }
+    .entry { padding: 18px 16px; gap: 13px; }
+    .entry .ico { width: 46px; height: 46px; font-size: 23px; }
+    .entry .name { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header class="hero">
+      <p class="hero-eyebrow">国家資格対策</p>
+      <h1 class="hero-title">第一種衛生管理者試験<br>問題集</h1>
+      <p class="hero-sub">学習スタイルを選んでスタート</p>
+    </header>
+
+    <main class="entry-wrap">
+      <p class="entry-lead">学習メニュー</p>
+
+      <button class="entry drill" data-app="drill">
+        <span class="ico" aria-hidden="true">📖</span>
+        <span class="body">
+          <span class="name">暗記ドリル</span>
+          <span class="desc">回転式で素早く反復 ・ 924問</span>
+        </span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </button>
+
+      <button class="entry quiz" data-app="quiz">
+        <span class="ico" aria-hidden="true">✏️</span>
+        <span class="body">
+          <span class="name">一問一答</span>
+          <span class="desc">◯×で着実に演習 ・ 1842問</span>
+        </span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </button>
+    </main>
+
+    <p class="foot">第一種衛生管理者試験 問題集</p>
+  </div>
+
+<script>
+  /* =========================================================
+     リンク先URL設定 ← ここだけ後で書き換えてください
+     暗記ドリル → ドリル(924問) のURL
+     一問一答   → 本体(1842問) のURL
+     例: './drill/index.html' のような相対パス、または
+         'https://example.com/drill/' のような絶対URL
+  ========================================================= */
+  const APP_URLS = {
+    drill: './drill.html',   // 暗記ドリル(924問)
+    quiz:  './quiz.html'     // 一問一答(1842問)
+  };
+  /* ========================================================= */
+
+  document.querySelectorAll('.entry').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var key = btn.getAttribute('data-app');
+      var url = APP_URLS[key];
+      if (url) {
+        window.location.href = url;
+      } else {
+        alert('リンク先URLが未設定です。\nindex.html 内の APP_URLS に「' +
+              (key === 'drill' ? '暗記ドリル' : '一問一答') + '」のURLを設定してください。');
+      }
+    });
+  });
+
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('./sw.js').catch(function () {});
+    });
+  }
+</script>
+</body>
+</html>
