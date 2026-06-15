@@ -1279,6 +1279,7 @@ function renderHome() {
   const hiddenCount = state.questions.filter(q => state.stats[q.id]?.hidden).length;
   return `
     <div class="container">
+      <a href="./index.html" class="back-to-launcher" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:12px;font-size:13px;font-weight:700;letter-spacing:0.08em;color:#27496d;text-decoration:none;">← 問題集トップ</a>
       <div class="header">
         <h1 class="title">第一種衛生管理者 暗記ドリル</h1>
         <div class="subtitle">Health Supervisor · Quick Drill</div>
